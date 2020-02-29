@@ -1,65 +1,70 @@
 package ru.cucumber.habr.steps;
 
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import cucumber.api.java.en.And;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Test;
-import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import ru.cucumber.habr.pages.MainPage;
 
 import static org.junit.Assert.assertTrue;
 
 public class MainPageStepdefs {
 
-    private WebDriver driver;
-
     private static final Logger logger = LogManager.getLogger(MainPageStepdefs.class);
 
-    public MainPageStepdefs(){
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        System.out.println("start");
-    }
+    @Autowired
+    private MainPage mainPage;
 
-    public void openPage(String url) {
-        driver.get(url);
+    @Value("${url}")
+    private String url;
+
+    @Given("I open main page")
+    public void openPage() {
+        mainPage.openUrl(url);
         logger.info("open page" + url);
     }
 
+    @When("^I open hub tab$")
     public void iOpenHubPage() {
-        driver.findElement(By.xpath("//a[contains(@href,'target_type=hubs')]")).click();
+        mainPage.tabHub.click();
         logger.info("select hubs tab");
     }
 
+    @When("I find post \"(.*)\"")
     public void iFindPost(String request) {
-        driver.findElement(By.id("search-form-btn")).click();
-        driver.findElement(By.id("search-form-field")).sendKeys(request, Keys.ENTER);
+        mainPage.btnFind.click();
+        mainPage.inputFind.sendKeys(request, Keys.ENTER);
         logger.info("find string " +  request);
     }
 
+    @And("I check exist \"(.*)\" company")
     public void iCheckExistCompany(String company) {
-        assertTrue(company + "not exist",driver
-                .findElement(By.xpath("//a[contains(@href,'" + company + "')]"))
+        assertTrue(company + "not exist",mainPage.getCompany(company)
                 .isDisplayed());
     }
 
+    @Then("I click \"(.*)\" company")
     public void iClickCompany(String company) {
-        driver.findElement(By.xpath("//a[contains(@href,'company/" + company + "')]")).click();
+        mainPage.getCompany(company).click();
         logger.info("select company");
     }
 
 
-    @Test
-    public void test() {
-        String company = "otus";
-        openPage("https://habr.com/ru/");
-        iFindPost(company);
-        iOpenHubPage();
-        iCheckExistCompany(company);
-        iClickCompany(company);
-        driver.quit();
-    }
+//    @Test
+//    public void test() {
+//        String company = "otus";
+//        openPage("https://habr.com/ru/");
+//        iFindPost(company);
+//        iOpenHubPage();
+//        iCheckExistCompany(company);
+//        iClickCompany(company);
+//        driver.quit();
+//    }
+
 }

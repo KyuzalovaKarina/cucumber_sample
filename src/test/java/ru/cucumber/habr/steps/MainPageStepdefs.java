@@ -8,8 +8,6 @@ import cucumber.api.java.en.When;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Keys;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import ru.cucumber.habr.pages.MainPage;
 
 import static org.junit.Assert.assertTrue;
@@ -18,11 +16,13 @@ public class MainPageStepdefs {
 
     private static final Logger logger = LogManager.getLogger(MainPageStepdefs.class);
 
-    @Autowired
     private MainPage mainPage;
 
-    @Value("${url}")
-    private String url;
+    private String url = "https://habr.com/ru/";
+
+    public MainPageStepdefs(){
+        mainPage = new MainPage();
+    }
 
     @Given("I open main page")
     public void openPage() {
